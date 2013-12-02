@@ -2,11 +2,10 @@ import pilas, random
 from pilas.actores import Banana, Bomba, Aceituna, Mono
 
 pilas.iniciar()
-#musica que corre en el juego
 musica = pilas.musica.cargar('cancionMario.mp3')
 musica.reproducir()
 
-#escena principal
+
 class EscenaDeMenu(pilas.escena.Base):
 
     def __init__(self):
@@ -33,14 +32,13 @@ class EscenaDeMenu(pilas.escena.Base):
         import sys
         sys.exit(0)
 
-#escena de juego con Mario
+
 class EscenaDeJuego(pilas.escena.Base):
 
     def __init__(self):
         pilas.escena.Base.__init__(self)
 
     def iniciar(self):
-#crecion del hongo y movimiento
         class BananaConMovimiento(Banana):
 
             def __init__(self, x=0, y=0):
@@ -56,7 +54,6 @@ class EscenaDeJuego(pilas.escena.Base):
                 elif (puntos.obtener() > 1190):
                     self.y -= 3.5
 
-#colision entre mono y hongo
         def comer_banana(mono, banana):
             banana.eliminar()
             Hongo = BananaConMovimiento(x=random.randrange(-320, 320), y=240)
@@ -67,7 +64,6 @@ class EscenaDeJuego(pilas.escena.Base):
             if (pactuales == 300 or pactuales==600 or pactuales == 900 or pactuales == 1200 or pactuales == 1500):
                 vidas.ganarvidas()
 
-#creacion de hongos
         def crear_comida():
             if (puntos.obtener() > 790):
                 t = 0.5
@@ -78,7 +74,6 @@ class EscenaDeJuego(pilas.escena.Base):
             bananas.append(Hongo)
             pilas.mundo.agregar_tarea(t, crear_comida)
 
-#creacion de personajes y algunas caracteristicas
         class BombaConMovimiento(Bomba):
 
             def __init__(self, x=0, y=0):
@@ -108,7 +103,6 @@ class EscenaDeJuego(pilas.escena.Base):
                     self.direccion = -self.direccion
                 self.y += self.direccion
 
-#como se crean los enemigos
         def crear_planta():
             t = 10
             planta = PlantaC(x=random.randrange(-320, 320), y=-280)
@@ -127,7 +121,6 @@ class EscenaDeJuego(pilas.escena.Base):
             bombas.append(enemigo)
             pilas.mundo.agregar_tarea(t, crear_enemigo)
 
-#determinan lo que pasa cuando colisionan
         def hacer_explotar_una_bomba(mono, bomba):
             bomba.explotar()
             puntos.aumentar(-40)
@@ -137,7 +130,6 @@ class EscenaDeJuego(pilas.escena.Base):
             puntos.aumentar(-40)
             vidas.perdervidas()
 
-#Clase encargada de las vidas
         class Vidas():
 
             def __init__(self, Vida=3):
@@ -193,7 +185,6 @@ class EscenaDeJuego(pilas.escena.Base):
                     mono.eliminar()
                     pilas.avisar("Pulsa la tecla 'Q' para regresar al menu...")
 
-#creacion del protagonista
         class MiProtagonista(Mono):
             
             def __init__(self, x=0, y=0):
@@ -225,7 +216,6 @@ class EscenaDeJuego(pilas.escena.Base):
         mi_control = pilas.control.Control(pilas.escena_actual(), teclas)
         mono.aprender(pilas.habilidades.MoverseConElTeclado, control=mi_control)
 
-#definicion de los primeros personajes
         planta = PlantaC(x=random.randrange(-320,320), y=-280)
         planta.escala = 0.7
         plantas = [planta]
@@ -240,24 +230,20 @@ class EscenaDeJuego(pilas.escena.Base):
         bomba.escala = 0.2
         bombas = [bomba]
 
-#agrega las tareas de crear personajes en determinado tiempo
         pilas.mundo.agregar_tarea(1, crear_enemigo)
         pilas.mundo.agregar_tarea(1, crear_comida)
         pilas.mundo.agregar_tarea(10, crear_planta)
 
-#colisiones
         pilas.escena_actual().colisiones.agregar(mono, bananas, comer_banana)
         pilas.escena_actual().colisiones.agregar(mono, bombas, hacer_explotar_una_bomba)
         pilas.escena_actual().colisiones.agregar(mono, plantas, morir_por_planta)
 
-#para salir de la escena
         pilas.eventos.pulsa_tecla.conectar(self.cuando_pulsa_tecla)
 
     def cuando_pulsa_tecla(self, evento):
         if evento.texto == 'q':
             pilas.cambiar_escena(EscenaDeMenu())
 
-#Juego con Luigi
 class Luigi(pilas.escena.Base):
 
     def __init__(self):
